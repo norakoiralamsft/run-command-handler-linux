@@ -96,7 +96,7 @@ func uninstall(ctx *log.Context, h HandlerEnvironment, report *RunCommandInstanc
 	return "", "", nil
 }
 
-func enablePre(ctx *log.Context, h HandlerEnvironment, seqNum int) error {
+func enablePre(ctx *log.Context, h HandlerEnvironment, extName string, seqNum int) error {
 	// exit if this sequence number (a snapshot of the configuration) is already
 	// processed. if not, save this sequence number before proceeding.
 	if shouldExit, err := checkAndSaveSeqNum(ctx, seqNum, mostRecentSequence); err != nil {
