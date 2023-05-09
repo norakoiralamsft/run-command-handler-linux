@@ -103,7 +103,7 @@ func enablePre(ctx *log.Context, h HandlerEnvironment, extName string, seqNum in
 		return errors.Wrap(err, "failed to process sequence number")
 	} else if shouldExit {
 		ctx.Log("event", "exit", "message", "the script configuration has already been processed, will not run again")
-		deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h. ctx)
+		deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h, ctx)
 		os.Exit(0)
 	}
 	return nil
