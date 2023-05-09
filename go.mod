@@ -31,8 +31,8 @@ require (
 	github.com/ahmetb/go-httpbin v0.0.0-20200921172446-862fbad56b77 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-kit/log v0.2.0 // indirect
 	github.com/go-logfmt/logfmt v0.5.1 // indirect
+	github.com/go-stack/stack v1.8.1 // indirect
 	github.com/gofrs/uuid v4.3.0+incompatible // indirect
 	github.com/golang-jwt/jwt v3.2.1+incompatible // indirect
 	github.com/golang-jwt/jwt/v4 v4.4.2 // indirect
@@ -49,5 +49,3 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
 )
-
-replace github.com/go-kit/kit => github.com/go-kit/kit v0.1.1-0.20160721083846-b076b44dbec2
