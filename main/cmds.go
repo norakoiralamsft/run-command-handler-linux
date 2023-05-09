@@ -498,5 +498,5 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 		configFile = extName + "." + configFile
 	}
 	mostRecentRuntimeSetting := fmt.Sprintf("%d.settings", uint(seqNum))
-	utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, configFile, uint(seqNum), "\\d+.settings", mostRecentRuntimeSetting, false)
+	utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, configFile, uint64(seqNum), "\\d+.settings", mostRecentRuntimeSetting)
 }
