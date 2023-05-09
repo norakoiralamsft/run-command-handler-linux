@@ -103,7 +103,7 @@ func enablePre(ctx *log.Context, h HandlerEnvironment, extName string, seqNum in
 		return errors.Wrap(err, "failed to process sequence number")
 	} else if shouldExit {
 		ctx.Log("event", "exit", "message", "the script configuration has already been processed, will not run again")
-		deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h)
+		deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h. ctx)
 		os.Exit(0)
 	}
 	return nil
@@ -210,7 +210,7 @@ func enable(ctx *log.Context, h HandlerEnvironment, report *RunCommandInstanceVi
 		ctx.Log("event", "enable script failed")
 	}
 
-	deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h)
+	deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h, ctx)
 
 	// Report the output streams to blobs
 	outputFilePosition, err = appendToBlob(stdoutF, outputBlobSASRef, outputBlobAppendClient, outputFilePosition, ctx)
@@ -491,12 +491,16 @@ func createOrReplaceAppendBlob(blobUri string, sasToken string, managedIdentity 
 	return blobSASRef, blobAppendClient, nil
 }
 
-func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string, extName string, seqNum int, h HandlerEnvironment) {
+func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string, extName string, seqNum int, h HandlerEnvironment, ctx *log.Context) {
 	configFile := ""
 	downloadParent := filepath.Join(dataDir, downloadDir)
 	if extName != "" {
 		configFile = extName + "." + configFile
 	}
 	mostRecentRuntimeSetting := fmt.Sprintf("%d.settings", uint(seqNum))
-	utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, configFile, uint64(seqNum), "\\d+.settings", mostRecentRuntimeSetting)
+	ctx.Log("event", "clearing settings and script files except most recent seq num")
+	err := utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, configFile, uint64(seqNum), "\\d+.settings", mostRecentRuntimeSetting)
+	if err != nil {
+		ctx.Log("event", "could not clear settings")
+	}
 }
