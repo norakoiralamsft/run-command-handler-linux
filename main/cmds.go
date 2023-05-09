@@ -210,11 +210,11 @@ func enable(ctx *log.Context, h HandlerEnvironment, report *RunCommandInstanceVi
 		ctx.Log("event", "enable script failed")
 	}
 
-	deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h, ctx)
-
 	// Report the output streams to blobs
 	outputFilePosition, err = appendToBlob(stdoutF, outputBlobSASRef, outputBlobAppendClient, outputFilePosition, ctx)
 	errorFilePosition, err = appendToBlob(stderrF, errorBlobSASRef, errorBlobAppendClient, errorFilePosition, ctx)
+
+	deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h, ctx)
 
 	return stdoutTail, stderrTail, runErr
 }
@@ -501,6 +501,6 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 	ctx.Log("event", "clearing settings and script files except most recent seq num")
 	err := utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, configFile, uint64(seqNum), "\\d+.settings", mostRecentRuntimeSetting)
 	if err != nil {
-		ctx.Log("event", "could not clear settings")
+		ctx.Log("event", "could not clear settings", "error", err)
 	}
 }
