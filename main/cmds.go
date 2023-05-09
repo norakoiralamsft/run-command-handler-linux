@@ -28,7 +28,7 @@ const (
 )
 
 type cmdFunc func(ctx *log.Context, hEnv HandlerEnvironment, report *RunCommandInstanceView, extName string, seqNum int) (stdout string, stderr string, err error)
-type preFunc func(ctx *log.Context, seqNum int) error
+type preFunc func(ctx *log.Context, hEnv HandlerEnvironment, extName string, seqNum int) error
 
 type cmd struct {
 	invoke             cmdFunc // associated function
@@ -103,13 +103,7 @@ func enablePre(ctx *log.Context, h HandlerEnvironment, seqNum int) error {
 		return errors.Wrap(err, "failed to process sequence number")
 	} else if shouldExit {
 		ctx.Log("event", "exit", "message", "the script configuration has already been processed, will not run again")
-		downloadParent := filepath.Join(dataDir, downloadDir)
-		if extName != "" {
-			configFile = extName + "." + configFile
-		}
-		configPath := filepath.Join(h.HandlerEnvironment.ConfigFolder, configFile)
-		mostRecentRuntimeSetting := fmt.Sprintf("%d.settings", uint(seqNum))
-		utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, configFile, uint(seqNum), "\\d+.settings", mostRecentRuntimeSetting, false)
+		deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h)
 		os.Exit(0)
 	}
 	return nil
@@ -216,13 +210,7 @@ func enable(ctx *log.Context, h HandlerEnvironment, report *RunCommandInstanceVi
 		ctx.Log("event", "enable script failed")
 	}
 
-	downloadParent := filepath.Join(dataDir, downloadDir)
-	if extName != "" {
-		configFile = extName + "." + configFile
-	}
-	configPath := filepath.Join(h.HandlerEnvironment.ConfigFolder, configFile)
-	mostRecentRuntimeSetting := fmt.Sprintf("%d.settings", uint(seqNum))
-	utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, configFile, uint(seqNum), "\\d+.settings", mostRecentRuntimeSetting, false)
+	deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h)
 
 	// Report the output streams to blobs
 	outputFilePosition, err = appendToBlob(stdoutF, outputBlobSASRef, outputBlobAppendClient, outputFilePosition, ctx)
@@ -501,4 +489,15 @@ func createOrReplaceAppendBlob(blobUri string, sasToken string, managedIdentity 
 		}
 	}
 	return blobSASRef, blobAppendClient, nil
+}
+
+func deleteScriptsAndSettingsExceptMostRecent(string dataDir, string downloadDir, string extName, int seqNum, h HandlerEnvironment)
+{
+	configFile := ""
+	downloadParent := filepath.Join(dataDir, downloadDir)
+	if extName != "" {
+		configFile = extName + "." + configFile
+	}
+	mostRecentRuntimeSetting := fmt.Sprintf("%d.settings", uint(seqNum))
+	utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, configFile, uint(seqNum), "\\d+.settings", mostRecentRuntimeSetting, false)
 }
