@@ -491,8 +491,7 @@ func createOrReplaceAppendBlob(blobUri string, sasToken string, managedIdentity 
 	return blobSASRef, blobAppendClient, nil
 }
 
-func deleteScriptsAndSettingsExceptMostRecent(string dataDir, string downloadDir, string extName, int seqNum, h HandlerEnvironment)
-{
+func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string, extName string, seqNum int, h HandlerEnvironment) {
 	configFile := ""
 	downloadParent := filepath.Join(dataDir, downloadDir)
 	if extName != "" {
