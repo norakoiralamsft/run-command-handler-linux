@@ -506,8 +506,6 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 	
 	if runAsUser != "" {
 		runAsDownloadParent := filepath.Join(fmt.Sprintf(runAsDir, runAsUser), downloadDir)
-		//runAsCurrentDownload := filepath.Join(runAsDownloadParent, strconv.Itoa(seqNum), "")
-		ctx.Log("Event", runAsCurrentDownload)
 		err = utils.TryDeleteDirectoriesExcept(runAsDownloadParent, strconv.Itoa(seqNum))
 		if err != nil {
 			ctx.Log("event", "could not clear runas script", "error", err)
