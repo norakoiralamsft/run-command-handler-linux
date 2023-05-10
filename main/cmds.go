@@ -493,10 +493,10 @@ func createOrReplaceAppendBlob(blobUri string, sasToken string, managedIdentity 
 
 func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string, extName string, seqNum int, h HandlerEnvironment, ctx *log.Context) {
 	downloadParent := filepath.Join(dataDir, downloadDir)
-	regex1 := extName + "%d.settings"
-	regex2 := extName + "\\d+.settings"
-	ctx.Log("event", "clearing settings and script files except most recent seq num", regex1, regex2)
-	err := utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, "", uint64(seqNum), regex2, regex1)
+	regex1 := extName + "\\d+.settings"
+	regex2 := extName + "%d.settings"
+	ctx.Log("event", "clearing settings and script files except most recent seq num")
+	err := utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, "", uint64(seqNum), regex1, regex2)
 	if err != nil {
 		ctx.Log("event", "could not clear settings", "error", err)
 	}
