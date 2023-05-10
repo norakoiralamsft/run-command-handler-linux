@@ -499,16 +499,14 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 	ctx.Log("event", "clearing settings and script files except most recent seq num")
 	err := utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, "", uint64(seqNum), regex1, regex2)
 	if err != nil {
-		ctx.Log("event", "could not clear settings and script files", "error", err)
+		ctx.Log("event", "could not clear settings and script files")
 	}
 
-
-	
 	if runAsUser != "" {
 		runAsDownloadParent := filepath.Join(fmt.Sprintf(runAsDir, runAsUser), downloadDir)
 		err = utils.TryDeleteDirectoriesExcept(runAsDownloadParent, strconv.Itoa(seqNum))
 		if err != nil {
-			ctx.Log("event", "could not clear runas script", "error", err)
+			ctx.Log("event", "could not clear runas script")
 		}
 	}
 }
