@@ -511,6 +511,4 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 			ctx.Log("event", "could not clear runas script", "error", err)
 		}
 	}
-	
-	
 }
