@@ -104,7 +104,7 @@ func enablePre(ctx *log.Context, h HandlerEnvironment, extName string, seqNum in
 		return errors.Wrap(err, "failed to process sequence number")
 	} else if shouldExit {
 		ctx.Log("event", "exit", "message", "the script configuration has already been processed, will not run again")
-		deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h, ctx)
+		deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h, ctx, "")
 		os.Exit(0)
 	}
 	return nil
@@ -215,7 +215,7 @@ func enable(ctx *log.Context, h HandlerEnvironment, report *RunCommandInstanceVi
 	outputFilePosition, err = appendToBlob(stdoutF, outputBlobSASRef, outputBlobAppendClient, outputFilePosition, ctx)
 	errorFilePosition, err = appendToBlob(stderrF, errorBlobSASRef, errorBlobAppendClient, errorFilePosition, ctx)
 
-	deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h, ctx)
+	deleteScriptsAndSettingsExceptMostRecent(dataDir, downloadDir, extName, seqNum, h, ctx, cfg.publicSettings.RunAsUser)
 
 	return stdoutTail, stderrTail, runErr
 }
@@ -492,10 +492,10 @@ func createOrReplaceAppendBlob(blobUri string, sasToken string, managedIdentity 
 	return blobSASRef, blobAppendClient, nil
 }
 
-func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string, extName string, seqNum int, h HandlerEnvironment, ctx *log.Context) {
+func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string, extName string, seqNum int, h HandlerEnvironment, ctx *log.Context, runAsUser string) {
 	downloadParent := filepath.Join(dataDir, downloadDir)
-	regex1 := extName + "\\d+.settings"
-	regex2 := extName + "%d.settings"
+	regex1 := fmt.Sprintf(extName, "\\d+.settings")
+	regex2 := fmt.Sprintf(extName, "%d.settings")
 	ctx.Log("event", "clearing settings and script files except most recent seq num")
 	err := utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, "", uint64(seqNum), regex1, regex2)
 	if err != nil {
@@ -503,10 +503,9 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 	}
 
 
-	//downloadPathSuffix := scriptPath[len(dataDir):]
-	runAsDownloadParent := filepath.Join(runAsDir, downloadDir)
-	ctx.Log("Event", runAsDownloadParent)
-	if _, err := os.Stat(runAsDownloadParent); err == nil {
+	
+	if runAsUser != "" {
+		runAsDownloadParent := filepath.Join(fmt.Sprintf(runAsDir, runAsUser), downloadDir)
 		runAsCurrentDownload := filepath.Join(runAsDir, downloadDir, strconv.Itoa(seqNum))
 		ctx.Log("Event", runAsCurrentDownload)
 		err = utils.TryDeleteDirectoriesExcept(runAsDownloadParent, runAsCurrentDownload)
@@ -514,5 +513,6 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 			ctx.Log("event", "could not clear runas script", "error", err)
 		}
 	}
+	
 	
 }
