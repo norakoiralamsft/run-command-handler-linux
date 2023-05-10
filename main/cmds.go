@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+	"strconv"
 
 	utils "github.com/Azure/azure-extension-platform/pkg/utils"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/streaming"
@@ -504,8 +505,8 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 
 	//downloadPathSuffix := scriptPath[len(dataDir):]
 	runAsDownloadParent := filepath.Join(runAsDir, downloadDir)
-	if runAsDownloadParent != nil {
-		runAsCurrentDownload := filepath.Join(runAsDir, downloadDir, seqNum)
+	if runAsDownloadParent != "" {
+		runAsCurrentDownload := filepath.Join(runAsDir, downloadDir, strconv.Itoa(seqNum))
 		ctx.Log("Event", runAsDownloadParent, runAsCurrentDownload)
 	}
 
