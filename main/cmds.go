@@ -496,7 +496,8 @@ func deleteScriptsAndSettingsExceptMostRecent(dataDir string, downloadDir string
 	downloadParent := filepath.Join(dataDir, downloadDir)
 	regex1 := extName + "\\d+.settings"
 	regex2 := extName + "%d.settings"
-	ctx.Log("event", "clearing settings and script files except most recent seq num", regex1, regex2)
+	mostRecentRuntimeSetting := fmt.Sprintf(regex2, strconv.Itoa(seqNum))
+	ctx.Log("event", "clearing settings and script files except most recent seq num", regex1, mostRecentRuntimeSetting)
 	err := utils.TryClearExtensionScriptsDirectoriesAndSettingsFilesExceptMostRecent(downloadParent, h.HandlerEnvironment.ConfigFolder, "", uint64(seqNum), regex1, regex2)
 	if err != nil {
 		ctx.Log("event", "could not clear settings and script files")
